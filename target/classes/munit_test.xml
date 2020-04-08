@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd">
+	
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="dcce5696-dfdf-4e1c-89ef-f2a84ce779f6" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<flow name="munit_testFlow1" doc:id="7c88fcbb-0a89-4c16-ae4c-c822eede6c22" >
+		<http:listener doc:name="Listener" doc:id="d98a3673-3ede-4cdd-b100-4abfa82d85f4" config-ref="HTTP_Listener_config" path="/"/>
+		<file:read doc:name="Read" doc:id="ae2c4ffb-9392-4b4a-a36f-f949e05e0475" path="D:\input\input.json"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a2357f8a-feea-4e27-b52d-310e092d2efc" message='"data type of input is : "  #[dataType.mediaType.subType]'/>
+		<choice doc:name="Choice" doc:id="02fab037-96e1-4e4d-9e0c-1c61ba244dff" >
+			<when expression="#[dataType.mediaType.subType=='json']">
+				<logger level="INFO" doc:name="Logger" doc:id="19c08649-e61a-477c-bdee-e4be3d2db9b2" message="valid json data !!!!!!!"/>
+				<file:write doc:name="Write" doc:id="ff1af115-e72b-4674-88c5-dd48aa0d8192" path="D:\ output"/>
+				<logger level="INFO" doc:name="Logger" doc:id="d72088e9-0b78-4efa-b1b3-b3472cf85a02" message="suceesfully passed  !!!!!!!!  #[payload]"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="fcb562bf-9935-4641-9c17-0b6b7d3cecc4" message="Not a Json data !!!!!!!!!"/>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

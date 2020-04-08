@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="munit_test-test-suite.xml" />
+	<munit:test name="munit_test-test-suite-munit_testFlow1Test" doc:id="2167275d-5161-494d-ad38-2241a05a6435" description="Test">
+		<munit:behavior>
+			<munit:set-event doc:name="Set Event sending json data" doc:id="7792aaf3-b993-4c16-86cf-b1f7551da60b">
+				<munit:payload value='{
+"name":"brojo",
+"type":"MuleSoft"
+}' mediaType="application/json" />
+			</munit:set-event>
+			<logger level="INFO" doc:name="Logger" doc:id="62e5aa85-cf27-4121-84d4-0ef447d688f3" message="value from from fie read : #[payload]" />
+			<munit-tools:mock-when doc:name="Mock when read" doc:id="e6dea31f-7744-4052-8838-7a113187579d" processor="file:read">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Read" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="D:\input\input.json" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[payload]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when type check" doc:id="8bf0c110-ebad-411d-a90b-f1a313f274db" processor="when">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="#[dataType.mediaType.subType=='json']" attributeName="expression" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[payload]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when write" doc:id="f58c446a-a41a-478e-b4bc-a784cac6cf39" processor="file:write">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="D:\ output\output" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[payload]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to munit_testFlow1" doc:id="20afd337-2cbc-40d9-97ea-58630b8408b0" name="munit_testFlow1"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that checking data null or not" doc:id="3a92422f-9628-4f8b-949f-61ab51697d95" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="no data !!!!!!!!!!!!"/>
+			<logger level="INFO" doc:name="Logger" doc:id="1b2a2aa1-0f40-4697-81df-27a12b66f85e" message="payload data after  checking null :   #[payload]"/>
+			<munit-tools:assert-that doc:name="Assert that checking json data or not" doc:id="ea1aed3c-b098-4f18-90e3-ad5e27b6182d" is="#[MunitTools::matches('json')]" message="not a json data" expression="#[dataType.mediaType.subType]"/>
+			<logger level="INFO" doc:name="Logger" doc:id="cd57d816-ad91-4e73-8466-72fe0505fba6" message="after stored in data resopse is :::: #[payload]" />
+			<munit-tools:assert-that doc:name="Assert that to check null in write " doc:id="ba067df5-97de-4e3f-a83e-eb7fbc5b7593" is="#[MunitTools::notNullValue()]" expression="#[payload]" message="null payload so cannot write to a file !!!!!!!!1"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
